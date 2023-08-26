@@ -11,7 +11,7 @@ def tally_counter():
     while True:
         # Use the microphone as the audio source
         with sr.Microphone() as source:
-            print("Commands: [si | no | riavvia | stop]. Listening... ")
+            print("Commands: [(si, ok, yes) | no | riavvia | stop]. Listening... ")
             audio = r.listen(source)
 
         try:
@@ -21,7 +21,7 @@ def tally_counter():
 
             match text.lower():
                 # Increment the appropriate counter based on the recognized text
-                case "sì" | "si" | "yes":
+                case "sì" | "si" | "yes" | "ok":
                     yes_counter += 1
                     print_status(yes_counter, no_counter)
                 case "no":
