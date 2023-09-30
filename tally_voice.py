@@ -8,6 +8,10 @@ def tally_counter():
     # Create a recognizer object
     r = sr.Recognizer()
 
+    print("Calibrating background noise...")
+    with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source)
+
     while True:
         # Use the microphone as the audio source
         with sr.Microphone() as source:
@@ -19,21 +23,25 @@ def tally_counter():
             text = r.recognize_google(audio, language="it-IT")
             print("You said:", text)
 
+            # Commands close in time are recognized in a single sentence
+            commands = text.split()
+
+            for command in commands:
+                match command.lower():
+                    case "sì" | "si" | "yes" | "ok":
+                        yes_counter += 1
+                    case "no":
+                        no_counter += 1
+
             match text.lower():
-                # Increment the appropriate counter based on the recognized text
-                case "sì" | "si" | "yes" | "ok":
-                    yes_counter += 1
-                    print_status(yes_counter, no_counter)
-                case "no":
-                    no_counter += 1
-                    print_status(yes_counter, no_counter)
                 case "riavvia":
                     yes_counter = 0
                     no_counter = 0
-                    print_status(yes_counter, no_counter)
                 case "stop":
                     print_status(yes_counter, no_counter)
                     return
+                
+            print_status(yes_counter, no_counter)
 
         except sr.UnknownValueError:
             print("Sorry, I could not understand your speech.")
